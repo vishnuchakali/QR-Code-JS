@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Generator | Code Traversal</title>
+    <style>
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+      button{
+        border: 0px;
+        background-color: white;
+        height: 45px;
+        border-radius: 10px;
+      }
+      button:hover{
+        background-color: dodgerblue;
+      }
+      select:hover{
+        background-color: dodgerblue;
+      }
+     
+      body {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-color);
+      }
+      .box1{
+        background-color: white;
+        width: 150px;
+        height: 150px;
+        border-radius: 10px;
+      }
+      .box {
+        background-color: lightblue;
+        padding: 30px;
+        border: 2px;
+        box-shadow: 2px 3px 4px black;
+        width: 400px;
+        border-radius: 10px;
+      }
+
+      .qr-header h1 {
+        font-size: 26px;
+        text-align: center;
+        color: var(--secondary-color);
+        margin-bottom: 24px;
+        text-transform: uppercase;
+      }
+
+      .qr-header input {
+        width: 100%;
+        margin-block: 12px;
+      }
+
+      .qr-header input,
+      select {
+        padding: 8px;
+        border-radius: var(--border-radius);
+        font-size: 18px;
+        outline: none;
+        border: 2px solid var(--border-color);
+      }
+
+      .qr-header label {
+        color: var(--secondary-color);
+        font-size: 20px;
+      }
+
+      .qr-header div {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .error-message {
+        color: var(--error-color);
+        font-size: 14px;
+        margin-top: 10px;
+        display: none;
+      }
+
+      .qr-footer {
+        display: flex;
+        justify-content: center;
+      }
+
+      .qr-footer a {
+        background-color: var(--secondary-color);
+        text-decoration: none;
+        font-size: 20px;
+        padding: 14px 36px;
+        margin-inline: 2px;
+        color: var(--primary-color);
+        font-weight: 600;
+        border-radius: var(--border-radius);
+      }
+
+      .qr-footer a:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+      }
+
+      .qr-body {
+        display: grid;
+        place-items: center;
+        padding: 20px;
+      }
+
+      .qr-body img {
+        max-width: 100%;
+        max-height: 100%;
+        margin-block: 10px;
+        padding: 20px;
+        border: 0.5px solid var(--border-color);
+        border-radius: var(--border-radius);
+      }
+
+      @media screen and (max-width: 520px) {
+        .box {
+          width: 80%;
+        }
+        .qr-footer a {
+          padding: 12px;
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="qr-header">
+        <h1>Generate QR Code</h1>
+        <input
+          type="text"
+          placeholder="Type your text or URL"
+          id="qr-text"
+          aria-label="Enter text or URL"
+          required
+          maxlength="200"
+        />
+        <div>
+          <label for="sizes">Select Size:</label>
+          <select id="sizes" aria-label="Select QR Code Size">
+            <option value="100">100x100</option>
+            <option value="200">200x200</option>
+            <option value="300">300x300</option>
+          </select>
+        </div>
+        <p class="error-message" id="error-message">Please enter valid input.</p>
+      </div>
+      <div class="qr-body" ></div>
+      <div class="qr-footer">
+        <button><a href="#" id="generateBtn">Generate</a></button>&nbsp;&nbsp;&nbsp;&nbsp;
+      <button><a href="#" id="downloadBtn" download="QR_Code.png" disabled>Download</a></button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      const qrText = document.getElementById("qr-text");
+      const sizes = document.getElementById("sizes");
+      const generateBtn = document.getElementById("generateBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const qrContainer = document.querySelector(".qr-body");
+      const errorMessage = document.getElementById("error-message");
+
+      let size = sizes.value;
+
+      generateBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (qrText.value.trim().length > 0) {
+          generateQRCode();
+          errorMessage.style.display = "none";
+        } else {
+          errorMessage.style.display = "block";
+        }
+      });
+
+      sizes.addEventListener("change", (e) => {
+        size = e.target.value;
+        if (qrText.value.trim().length > 0) {
+          generateQRCode();
+        }
+      });
+
+      downloadBtn.addEventListener("click", () => {
+        const img = document.querySelector(".qr-body img");
+        if (img) {
+          const imgAttr = img.getAttribute("src");
+          downloadBtn.setAttribute("href", imgAttr);
+        }
+      });
+
+      function generateQRCode() {
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, {
+          text: qrText.value,
+          width: size,
+          height: size,
+          colorDark: "#000",
+          colorLight: "#fff",
+        });
+
+        // Enable the download button
+        downloadBtn.removeAttribute("disabled");
+      }
+    </script>
+  </body>
+</html>
